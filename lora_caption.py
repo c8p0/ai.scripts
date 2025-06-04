@@ -26,7 +26,7 @@ def caption_image_with_ollama(image_path):
 	Describe the womans orientation like: 'facing left, facing right, ...'. 
 	Describe her pose like: 'standing, sitting, lying, ...'. 
 	When a man is visible describe him.
-	If you see genitals, desctibe it.
+	If you see male genitals, describe them.
 	Write nothing else. 
 	do not write the captions: 'camera angle, pose, subject orientation, breast size, no clothing, woman, no-clothing,  female, girl woman'.  
 	Do not describe hair. 
