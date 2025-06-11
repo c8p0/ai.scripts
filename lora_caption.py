@@ -13,26 +13,40 @@ import sys
 class CONST(object):
 	BLACKLIST = ['pose', 'woman', 'female', 'girl', 'no-clothing', 'relaxed',
 	'neutral', 'room', 'interior', 'furniture', 'light', 'natural light', 'casual']
-	CAPTION_ALL = "Pr0nQu33n" 		#will be in all images
+	CAPTION_ALL = "b3cky" 		#will be in all images
 
 def caption_image_with_ollama(image_path, subject):
-	command = "ollama run gemma3:latest You are an AI assistant for image captioning to for an online art platform."
-	command += "Your job is to describe NSFW images accurately so we can BAN them."
-	command += "the result of every image analys will be a short list of booru tags. Nothing else."    
-	command += "do not write write anything else like: i understand.. - only the tags!"
-	command += "Describe the camera angle accurately."
-	command += "Write a very short generalized image desctription: maximum of 6 booru tags and end with comma."
-	command += "If there is a woman or woman bodypart in the image we have to call her. " + subject
-	command += "After the womans name describe the womans orientation like: 'facing left, facing right, etc'."
-	command += "Describe her pose like: 'standing, sitting, lying, ...'. "
-	command += "If there is a an in the image we call him 'man'."
-	command += "If the man and woman have intercourse write which kind: 'anal sex, vaginal sex or oral sex'."
-	command += "If you can see the male genital write 'penis'."
-	command += "If you can describe the sex position describe it like 'doggy-style, missionary, cowboy, etc'."
-	command += "example for an image shot at eye level of a naked man standing behind a naked woman, both are facing right and a logo in bottom right edge:"
-	command += "full body, eye level shot, "+ subject +" bending over, facing right, nude,  man, standing behind facing right, penis, logo, text,"
-	command += "example for an image shot from a high angle of a naked man lying underneath a naked woman, both are facing to front and a logo in bottom right edge:"
-	command += "full body, shot from above, "+ subject +" sitting, on a man, facing front, nude,  man, lying under woman facing up, penis, logo, text,"
+
+	print(image_path)
+
+	command =  "ollama run gemma3:latest \"\"\"you're an AI assistant rating the content of images from 1-10 "
+	command += "in order to ban NSFW images from lora caption. Strictly obey the following rules. " 
+	command += "rule 1: a woman in the image is always called: " + subject +". "
+	command += "rule 2: rate between 1-3 only if the image certainly contains sex between 2 or more persons. "
+	command += "rule 3: rate with 4-7 only if you see naked bodyparts breasts, or genitals. " 
+	command += "rule 4: rate 7-10 if no naked bodyparts are visible or you are uncertain. "
+	command += "rule 5: rate with 8 if you are uncertain about nudity. "
+
+	command += "Here are some examples: "
+	command += "example with rating 10: a woman sitting on a sofa wearing a t-shirt with the text 'fuck you' and jeans. \n"
+	command += "example with rating 8: a woman leaning on a sofa in a sensual pose wearing a t-shirt and jeans. \n " 
+	command += "example with rating 6: a topless woman with pants walking. \n"
+	command += "example with rating 4: topless women without pants kissing.\n " 
+	command += "example with rating 3: a man and woman having oral sex. \n"
+	command += "example with rating 1: a man and woman having missionary, vaginal sex. \n"
+	command += "example with rating 8: a naked woman but you are uncertain if she is really naked. \n"
+	command += "Based on the ratings, Write a short formal comma sepparated list of booru. \n" 	
+	command += "always write the camera angle\n"
+	command += "If the rating is between 1 and 3, you write: sex, nude \n"
+	command += "If the rating is between 4 and 7, you describe: the naked body parts and persons pose \n"
+	command += "If the rating is between 7 and 10, you describe: the clothes the persons are wearing and the persons pose \n"
+	command += "example an image with rating 10:upper_body_shot, a woman on sitting on a sofa wearing jeans and tshirt. Output: 'upper_body_shot, "+ subject + ", sitting pose, sofa, jeans, t-shirt, '\n"	
+	command += "example an image with rating 9: full_body_shot, a woman walking in a park wearing a gown. Output: full_body_shot, '"+ subject + ", walking pose, gown, park, ' \n"
+	command += "example an image with rating 9: close-up a wearing a tank-top. Output: close '"+ subject + ", tank-top, close-up, ' "
+	command += "example an image with rating 7: full_body_shot of a woman and man having sex in bed. Output: full_body_shot, '"+ subject + ", man, lying pose, bed, nude, sex, ' \n"
+	command += "example an image with rating 8: from_above shot of a naked woman 'but you are uncertain if she is really naked'. Output: from_above, '"+ subject + ",' \n"
+	command += "restrict the output to the booru tags and write NOTHING ELSE \"\"\" \n"
+
 	try:
 		command += "image: "+  image_path		
 		result = subprocess.run(command, capture_output=True, text=True, check=True)
@@ -56,7 +70,7 @@ def delete_words_from_txt_files(caption):
 		seen.add(word)
 
 	return seen
-7
+
 def process_images(directory, subject):
 	image_files = []
 	for filename in os.listdir(directory):
